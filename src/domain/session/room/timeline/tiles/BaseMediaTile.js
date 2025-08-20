@@ -1,0 +1,188 @@
+/*
+Copyright 2025 New Vector Ltd.
+Copyright 2020 Bruno Windels <bruno@windels.cloud>
+Copyright 2020 The Matrix.org Foundation C.I.C.
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+
+import {BaseMessageTile} from "./BaseMessageTile.js";
+import {SendStatus} from "../../../../../matrix/room/sending/PendingEvent.js";
+const MAX_HEIGHT = 300;
+const MAX_WIDTH = 400;
+
+export class BaseMediaTile extends BaseMessageTile {
+    constructor(entry, options) {
+        super(entry, options);
+        this._decryptedThumbnail = null;
+        this._decryptedFile = null;
+        this._isVisible = false;
+        this._error = null;
+        this._downloading = false;
+        this._downloadError = null;
+    }
+
+    async downloadMedia() {
+        if (this._downloading || this.isPending) {
+            return;
+        }
+        const content = this._getContent();
+        const filename = content.body;
+        this._downloading = true;
+        this.emitChange("status");
+        let blob;
+        try {
+            blob = await this._mediaRepository.downloadAttachment(content);
+            this.platform.saveFileAs(blob, filename);
+        } catch (err) {
+            this._downloadError = err;
+        } finally {
+            blob?.dispose();
+            this._downloading = false;
+        }
+        this.emitChange("status");
+    }
+
+    get isUploading() {
+        return this.isPending && this._entry.pendingEvent.status === SendStatus.UploadingAttachments;
+    }
+
+    get uploadPercentage() {
+        const {pendingEvent} = this._entry;
+        return pendingEvent && Math.round((pendingEvent.attachmentsSentBytes / pendingEvent.attachmentsTotalBytes) * 100);
+    }
+
+    get status() {
+        const {pendingEvent} = this._entry;
+        switch (pendingEvent?.status) {
+            case SendStatus.Waiting:
+                return this.i18n`Waiting…`;
+            case SendStatus.EncryptingAttachments:
+            case SendStatus.Encrypting:
+                return this.i18n`Encrypting…`;
+            case SendStatus.UploadingAttachments:
+                return this.i18n`Uploading…`;
+            case SendStatus.Sending:
+                return this.i18n`Sending…`;
+            case SendStatus.Error:
+                return this.i18n`Error: ${pendingEvent.error.message}`;
+            default:
+                if (this._downloadError) {
+                    return `Download failed`;
+                }
+                if (this._downloading) {
+                    return this.i18n`Downloading…`;
+                }
+                return "";
+        }
+    }
+
+    get thumbnailUrl() {
+        if (!this._isVisible) {
+            return "";
+        }
+        if (this._decryptedThumbnail) {
+            return this._decryptedThumbnail.url;
+        } else {
+            const thumbnailMxc = this._getContent().info?.thumbnail_url;
+            if (thumbnailMxc) {
+                return this._mediaRepository.mxcUrlThumbnail(thumbnailMxc, this.width, this.height, "scale");
+            }
+        }
+        if (this._entry.isPending) {
+            const attachment = this._entry.pendingEvent.getAttachment("info.thumbnail_url");
+            return attachment && attachment.localPreview.url;
+        }
+        if (this._isMainResourceImage()) {
+            if (this._decryptedFile) {
+                return this._decryptedFile.url;
+            } else {
+                const mxcUrl = this._getContent()?.url;
+                if (typeof mxcUrl === "string") {
+                    return this._mediaRepository.mxcUrlThumbnail(mxcUrl, this.width, this.height, "scale");
+                }
+            }
+        }
+        return "";
+    }
+
+    notifyVisible() {
+        super.notifyVisible();
+        this._isVisible = true;
+        this.emitChange("thumbnailUrl");
+        if (!this.isPending) {
+            this._tryLoadEncryptedThumbnail();
+        }
+    }
+
+    get width() {
+        const info = this._getContent()?.info;
+        return Math.round(info?.w * this._scaleFactor());
+    }
+
+    get height() {
+        const info = this._getContent()?.info;
+        return Math.round(info?.h * this._scaleFactor());
+    }
+
+    get mimeType() {
+        const info = this._getContent()?.info;
+        return info?.mimetype;
+    }
+
+    get label() {
+        return this._getContent().body;
+    }
+
+    get error() {
+        if (this._error) {
+            return `Could not load media: ${this._error.message}`;
+        }
+        return null;
+    }
+
+    setViewError(err) {
+        this._error = err;
+        this.emitChange("error");
+    }
+
+    async _loadEncryptedFile(file) {
+        const blob = await this._mediaRepository.downloadEncryptedFile(file, true);
+        if (this.isDisposed) {
+            blob.dispose();
+            return;
+        }
+        return this.track(blob);
+    }
+
+    async _tryLoadEncryptedThumbnail() {
+        try {
+            const thumbnailFile = this._getContent().info?.thumbnail_file;
+            const file = this._getContent().file;
+            if (thumbnailFile) {
+                this._decryptedThumbnail = await this._loadEncryptedFile(thumbnailFile);
+                this.emitChange("thumbnailUrl");
+            } else if (file && this._isMainResourceImage()) { // is the main resource an image? then try that for a thumbnail
+                this._decryptedFile = await this._loadEncryptedFile(file);
+                this.emitChange("thumbnailUrl");
+            }
+        } catch (err) {
+            this._error = err;
+            this.emitChange("error");
+        }
+    }
+
+    _scaleFactor() {
+        const info = this._getContent()?.info;
+        const scaleHeightFactor = MAX_HEIGHT / info?.h;
+        const scaleWidthFactor = MAX_WIDTH / info?.w;
+        // take the smallest scale factor, to respect all constraints
+        // we should not upscale images, so limit scale factor to 1 upwards
+        return Math.min(scaleWidthFactor, scaleHeightFactor, 1);
+    }
+
+    _isMainResourceImage() {
+        return true; // overwritten in VideoTile
+    }
+}

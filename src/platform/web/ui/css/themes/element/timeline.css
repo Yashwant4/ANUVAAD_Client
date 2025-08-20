@@ -1,0 +1,469 @@
+/*
+Copyright 2025 New Vector Ltd.
+Copyright 2020 Bruno Windels <bruno@windels.cloud>
+Copyright 2020 The Matrix.org Foundation C.I.C.
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+
+.Timeline_jumpDown {
+    width: 40px;
+    height: 40px;
+    bottom: 16px;
+    right: 32px;
+    border-radius: 100%;
+    border: 1px solid var(--background-color-secondary--darker-7);
+    background-image: url("./icons/chevron-down.svg?primary=icon-color");
+    background-position: center;
+    background-color: var(--background-color-primary--darker-10);
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.Timeline_message {
+    display: grid;
+    grid-template:
+        "avatar sender" auto
+        "avatar body" auto
+        "time   body" 1fr
+        "time   reactions" auto /
+         30px   1fr;
+    column-gap: 8px;
+    padding: 4px;
+    margin: 0 12px;
+    /* TODO: check whether this is needed for .media to maintain aspect ratio (on IE11) like the 100% above */
+    /* width: 100%; */
+    box-sizing: border-box;
+}
+
+.Timeline_message:not(.continuation) {
+    margin-top: 4px;
+}
+
+.ReplyPreviewView .Timeline_message {
+    display: grid;
+    grid-template: "body" auto;
+    margin-left: 0;
+    padding: 0;
+}
+
+.ReplyPreviewView .Timeline_message:not(.continuation) {
+    margin-top: 0;
+}
+
+@media screen and (max-width: 800px) {
+    .Timeline_message {
+        grid-template:
+            "avatar    sender" auto
+            "body      body" 1fr
+            "time      time" auto
+            "reactions reactions" auto /
+             30px 1fr;
+    }
+
+    .Timeline_messageSender {
+        margin-top: 0 !important;
+        align-self: center;
+    }
+}
+
+.Timeline_message:hover:not(.disabled), .Timeline_message.selected, .Timeline_message.menuOpen {
+    /* needs transparency support */
+    background-color: rgba(141, 151, 165, 0.1);
+    border-radius: 4px;
+}
+
+.Timeline_message:hover > .Timeline_messageOptions,
+.Timeline_message.menuOpen > .Timeline_messageOptions {
+    display: block;
+    user-select: none;
+}
+
+.Timeline_messageAvatar {
+    grid-area: avatar;
+    text-decoration: none;
+}
+
+.Timeline_messageSender {
+    grid-area: sender;
+    font-weight: bold;
+    line-height: 1.7rem;
+}
+
+.Timeline_messageSender, .Timeline_messageBody {
+    /* reset body margin */
+    margin: 0;
+    /* first try break-all, then break-word, which isn't supported everywhere */
+    word-break: break-all;  
+    word-break: break-word;
+}
+
+.Timeline_message:not(.continuation) .Timeline_messageSender,
+.Timeline_message:not(.continuation) .Timeline_messageBody {
+    margin-top: 4px;
+}
+
+.Timeline_messageOptions {
+    display: none;
+    grid-area: body;
+    align-self: start;
+    justify-self: end;
+    margin-top: -12px;
+    margin-right: 4px;
+    /* button visuals */
+    border: var(--background-color-primary--darker-10) 1px solid;
+    height: 24px;
+    width: 24px;
+    background-color: var(--background-color-primary);
+    color: inherit;
+    border-radius: 4px;
+    padding: 0;
+    text-align: center;
+    line-height: 22px;
+    cursor: pointer;
+}
+
+.Timeline_messageTime {
+    grid-area: time;
+}
+
+.Timeline_messageBody time {
+    padding: 2px 0 0px 10px;
+    user-select: none;
+}
+
+.Timeline_messageBody time, .Timeline_messageTime {
+    font-size: 0.8em;
+    line-height: normal;
+    color: var(--timeline-time-text-color);
+}
+
+.Timeline_messageBody.statusMessage {
+    font-style: italic;
+    color: var(--light-text-color);
+}
+
+.Timeline_messageBody {
+    grid-area: body;
+    line-height: 2.2rem;
+    /* so the .media can grow horizontally and its spacer can grow vertically */
+    width: 100%;
+    /* Fix for pre overflow */
+    min-width: 0;
+}
+
+.hydrogen .Timeline_messageSender.usercolor1 { color: var(--usercolor1); }
+.hydrogen .Timeline_messageSender.usercolor2 { color: var(--usercolor2); }
+.hydrogen .Timeline_messageSender.usercolor3 { color: var(--usercolor3); }
+.hydrogen .Timeline_messageSender.usercolor4 { color: var(--usercolor4); }
+.hydrogen .Timeline_messageSender.usercolor5 { color: var(--usercolor5); }
+.hydrogen .Timeline_messageSender.usercolor6 { color: var(--usercolor6); }
+.hydrogen .Timeline_messageSender.usercolor7 { color: var(--usercolor7); }
+.hydrogen .Timeline_messageSender.usercolor8 { color: var(--usercolor8); }
+
+.Timeline_messageBody h1,
+.Timeline_messageBody h2,
+.Timeline_messageBody h3,
+.Timeline_messageBody h4,
+.Timeline_messageBody h5,
+.Timeline_messageBody h6 {
+    font-weight: bold;
+    margin: 0.7em 0;
+}
+
+.Timeline_messageBody h1 { font-size: 1.6em; }
+.Timeline_messageBody h2 { font-size: 1.5em; }
+.Timeline_messageBody h3 { font-size: 1.4em; }
+.Timeline_messageBody h4 { font-size: 1.3em; }
+.Timeline_messageBody h5 { font-size: 1.2em; }
+.Timeline_messageBody h6 { font-size: 1.1em; }
+
+.Timeline_messageBody a {
+    word-break: break-all;
+}
+
+.Timeline_messageBody a.link {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.Timeline_messageBody .media {
+    display: grid;
+    margin-top: 4px;
+    width: 100%;
+}
+
+.Timeline_messageBody .media > a {
+    text-decoration: none;
+    width: 100%;
+    display: block;
+}
+
+/* .spacer grows with an inline padding-top to the size of the image,
+so the timeline doesn't jump when the image loads */
+.Timeline_messageBody .media > * {
+    grid-row: 1;
+    grid-column: 1;
+}
+
+.Timeline_messageBody .media img, .Timeline_messageBody .media video {
+    width: 100%;
+    height: auto;
+    /* for IE11 to still scale even though the spacer is too tall */
+    align-self: start;
+    border-radius: 4px;
+    display: block;
+}
+
+/* stretch the image (to the spacer) on platforms
+where we can trust the spacer to always have the correct height,
+otherwise the image starts with  height 0 and with loading=lazy
+only loads when the top comes into view*/
+.hydrogen:not(.legacy) .Timeline_messageBody .media img,
+.hydrogen:not(.legacy) .Timeline_messageBody .media video {
+    align-self: stretch;
+}
+
+.Timeline_messageBody .media > .status {
+    align-self: end;
+    justify-self: start;
+    font-size: 0.8em;
+}
+
+.Timeline_messageBody .media > progress {
+    align-self: center;
+    justify-self: center;
+    width: 75%;
+}
+
+.Timeline_messageBody .media > time {
+    align-self: end;
+    justify-self: end;
+}
+
+.Timeline_messageBody .media > time,
+.Timeline_messageBody .media > .status {
+    color: var(--text-color);
+    display: block;
+    padding: 2px;
+    margin: 4px;
+    /* needs transparency support */
+    background-color: rgba(255, 255, 255, 0.75);
+    border-radius: 4px;
+}
+
+.Timeline_messageBody .media > .spacer {
+    /* TODO: can we implement this with a pseudo element? or perhaps they are not grid items? */
+    width: 100%;
+    /* don't stretch height as it is a spacer, just in case it doesn't match with image height */
+    align-self: start;
+}
+
+.Timeline_messageBody code, .Timeline_messageBody pre {
+    background-color: var(--background-color-secondary);
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+.Timeline_messageBody code {
+    border-radius: 3px;
+    padding: .2em .3em;
+    margin: 0;
+}
+
+.Timeline_messageBody pre {
+    border: 1px solid var(--light-border);
+    padding: 0.5em;
+    max-height: 30em;
+    overflow: auto;
+}
+
+.Timeline_messageBody pre>code {
+    background-color: unset;
+    border-radius: unset;
+    display: block;
+    font-size: unset;
+}
+
+.Timeline_messageBody blockquote {
+    margin-left: 0;
+    padding-left: 20px;
+    border-left: 4px solid var(--light-border);
+}
+
+.Timeline_messageBody table {
+    border: 1px solid var(--background-color-secondary--darker-15);
+    border-radius: 2px;
+    border-spacing: 0;
+}
+
+.Timeline_messageBody thead th {
+    border-bottom: 1px solid var(--background-color-secondary--darker-15);
+}
+
+.Timeline_messageBody td, .Timeline_messageBody th {
+    padding: 2px 5px 2px 5px;
+}
+
+.Timeline_messageBody tbody tr:nth-child(2n) {
+    background-color: var(--background-color-secondary);
+}
+
+.Timeline_messageBody .pill {
+    padding: 0px 5px;
+    border-radius: 15px;
+    background-color: var(--background-color-secondary);
+    border: 1px solid var(--background-color-secondary--darker-10);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    line-height: 2rem;
+    vertical-align: top;
+    margin: 1px;
+}
+
+.Timeline_messageBody .pill div.avatar {
+    display: inline-block;
+    margin-right: 3px;
+}
+
+.Timeline_message.unsent .Timeline_messageBody {
+    color: var(--light-text-color);
+}
+
+.Timeline_message.unverified .Timeline_messageBody {
+    color: var(--error-color);
+}
+
+.Timeline_messageReactions {
+    grid-area: reactions;
+    margin-top: 6px;
+}
+
+.Timeline_messageReactions button {
+    display: inline-flex;
+    line-height: 2.0rem;
+    margin-right: 6px;
+    padding: 1px 6px;
+    border: 1px solid var(--light-border);
+    border-radius: 10px;
+    background-color: var(--background-color-secondary);
+    color: inherit;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+}
+
+.Timeline_messageReactions button.active {
+    background-color: var(--accent-color--alpha-11);
+    border-color: var(--accent-color);
+}
+
+@keyframes glow-reaction-border {
+    0% {
+        border-color: var(--background-color-secondary);
+    }
+
+    100% {
+        border-color: var(--accent-color);
+    }
+}
+
+.Timeline_messageReactions button.active.pending {
+    animation-name: glow-reaction-border;
+    animation-duration: 0.5s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.Timeline_locationLink {
+    padding: 0px 8px;
+    border-radius: 16px;
+    border: 1px solid var(--light-border);
+    background-color: var(--background-color-secondary);
+    text-decoration: none;
+    display: inline-block;
+    line-height: 2rem;
+    vertical-align: top;
+    margin: 1px 4px;
+}
+
+.AnnouncementView {
+    margin: 5px 0;
+    padding: 5px 10%;
+}
+
+.AnnouncementView > div {
+    margin: 0 auto;
+    padding: 10px 20px;
+    background-color: var(--background-color-secondary);
+    text-align: center;
+    border-radius: 10px;
+}
+
+.GapView_container > :not(:first-child) {
+    margin-left: 12px;
+}
+
+.GapView {
+    padding: 52px 20px;
+}
+
+.GapView.isAtTop {
+    padding: 52px 20px 12px 20px;
+}
+
+.DateHeader {
+    font-weight: bold;
+    font-size: 1.5rem;
+    position: sticky;
+    top: 5px;
+}
+
+.DateHeader time {
+    margin: 0 auto;
+    padding: 12px 4px;
+    max-width: 350px;
+    padding: 12px;
+    display: block;
+    color: var(--light-text-color);
+    background-color: var(--background-color-primary);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.CallTileView > div > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.CallTileView_members > * {
+    margin-right: -16px;
+}
+
+.CallTileView_members {
+    display: flex;
+}
+
+.CallTileView_title {
+    font-weight: bold;
+}
+
+.CallTileView_subtitle {
+    font-size: 12px;
+}
+
+.CallTileView_memberCount::before {
+    content: "";
+    background-image: url('./icons/room-members.svg?primary=text-color');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    vertical-align: bottom;
+    margin-right: 4px;
+}

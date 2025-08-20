@@ -1,0 +1,87 @@
+/*
+Copyright 2025 New Vector Ltd.
+Copyright 2020 Bruno Windels <bruno@windels.cloud>
+Copyright 2020 The Matrix.org Foundation C.I.C.
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+
+/** contains styles for everything before the session view, like the session picker, login, load view, ... */
+
+.SessionPickerView {
+    padding: 0.4em;
+}
+
+.SessionPickerView ul {
+    list-style: none;
+    padding: 0;
+}
+
+.SessionPickerView li {
+    margin: 0.4em 0;
+}
+
+.SessionPickerView .session-info {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.SessionPickerView .session-info> :not(:first-child) {
+    margin-left: 8px;
+}
+
+.SessionPickerView li .user-id {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.SessionPickerView li .error {
+    margin: 0 20px;
+}
+
+.PasswordLoginView {
+    padding: 0 0.4em 0.4em;
+}
+
+.SessionLoadStatusView > .status, .LoginView_query-spinner {
+    display: flex;
+    gap: 12px;
+}
+
+.SessionLoadStatusView > .status p, .LoginView_query-spinner p {
+    flex: 1;
+    margin: 0;
+}
+
+.SessionLoadStatusView .spinner {
+    --size: 20px;
+}
+
+.StartSSOLoginView {
+    display: flex;
+    flex-direction: column;
+    padding: 0 0.4em 0;
+}
+
+.StartSSOLoginView_button {
+    flex: 1;
+    margin-top: 12px;
+}
+
+.LoginView_separator {
+    justify-content: center;
+    display: flex;
+    margin: 8px;
+}
+
+.CompleteSSOView_title {
+    display: flex;
+    justify-content: center;
+}
+
+.LoginView_sso {
+    padding: 0.4em 0.4em 0;
+}

@@ -1,0 +1,83 @@
+.RightPanelView{
+    grid-area: right;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.RoomDetailsView, .MemberDetailsView {
+    flex-direction: column;
+    flex: 1;
+}
+
+.RoomDetailsView_avatar {
+    display: flex;
+}
+
+.RoomDetailsView_name h2, .MemberDetailsView_name h2 {
+    text-align: center;
+}
+
+.MemberDetailsView_shield_container {
+    display: flex;
+    gap: 4px;
+}
+
+.MemberDetailsView_shield_red, .MemberDetailsView_shield_green, .MemberDetailsView_shield_black {
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 24px;
+    display: block;
+    flex-shrink: 0;
+}
+
+.MemberDetailsView_shield_description {
+    flex-grow: 1;
+    margin: 0;
+}
+
+.MemberDetailsView_shield_red {
+    background-image: url("./icons/verification-error.svg?primary=error-color");
+}
+
+.MemberDetailsView_shield_green {
+    background-image: url("./icons/verified.svg?primary=accent-color");
+}
+
+.MemberDetailsView_shield_black {
+    background-image: url("./icons/encryption-status.svg?primary=text-color");
+}
+
+.RoomDetailsView_label, .RoomDetailsView_row, .RoomDetailsView, .MemberDetailsView, .EncryptionIconView {
+    display: flex;
+    align-items: center;
+    color: var(--text-color);
+}
+
+.RoomDetailsView_value {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.EncryptionIconView {
+    justify-content: center;
+}
+
+.RightPanelView_buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+}
+
+.RightPanelView_buttons .hide {
+    visibility: hidden;
+}
+
+.MemberTileView a {
+    display: flex;
+    align-items: center;
+}

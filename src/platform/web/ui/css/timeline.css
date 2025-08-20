@@ -1,0 +1,58 @@
+/*
+Copyright 2025 New Vector Ltd.
+Copyright 2020 Bruno Windels <bruno@windels.cloud>
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+
+.Timeline {
+    display: flex;
+    flex-direction: column;
+    /* needed to position the jump to bottom button */
+    position: relative;
+    min-height: 0;
+}
+
+.Timeline_jumpDown {
+    position: absolute;
+}
+
+.Timeline_scroller {
+    overflow-y: scroll;
+    overscroll-behavior-y: contain;
+    overflow-anchor: none;
+    padding: 0;
+    margin: 0;
+    /* need to read the offsetTop of tiles relative to this element in TimelineView  */
+    position: relative;
+    min-height: 0;
+    flex: 1 0 0;
+}
+
+.Timeline_scroller > ul {
+    list-style: none;
+    /* use small horizontal padding so first/last children margin isn't collapsed
+    at the edge and a scrollbar shows up when setting margin-top to bottom-align
+    content when there are not yet enough tiles to fill the viewport */
+    padding: 1px 0;
+    margin: 0;
+}
+
+.AnnouncementView {
+    display: flex;
+    align-items: center;
+}
+
+.GapView_container {
+    display: flex;
+}
+
+.GapView_container > span {
+    flex: 1;
+}
+
+.Timeline_messageBody img {
+    max-width: 400px;
+    max-height: 300px;
+}

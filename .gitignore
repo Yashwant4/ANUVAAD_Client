@@ -1,0 +1,13 @@
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+node_modules
+fetchlogs
+sessionexports
+bundle.js
+target
+lib
+*.tar.gz
+.eslintcache
+.tmp
+playwright/synapselogs

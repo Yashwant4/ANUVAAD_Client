@@ -1,0 +1,87 @@
+/*
+Copyright 2025 New Vector Ltd.
+Copyright 2020 Bruno Windels <bruno@windels.cloud>
+Copyright 2020 The Matrix.org Foundation C.I.C.
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+
+.hydrogen {
+    --avatar-size: 32px;
+}
+
+.hydrogen .avatar {
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    line-height: var(--avatar-size);
+    font-size: calc(var(--avatar-size) * 0.6);
+    overflow: hidden;
+    flex-shrink: 0;
+    user-select: none;
+    text-align: center;
+    speak: none;
+}
+
+.hydrogen .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* work around postcss-css-variables limitations and repeat variable usage */
+.hydrogen .avatar.size-128 {
+    --avatar-size: 128px;
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    line-height: var(--avatar-size);
+    font-size: calc(var(--avatar-size) * 0.6);
+}
+
+.hydrogen .avatar.size-96 {
+    --avatar-size: 96px;
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    line-height: var(--avatar-size);
+    font-size: calc(var(--avatar-size) * 0.6);
+}
+
+.hydrogen .avatar.size-64 {
+    --avatar-size: 64px;
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    line-height: var(--avatar-size);
+    font-size: calc(var(--avatar-size) * 0.6);
+}
+
+.hydrogen .avatar.size-52 {
+    --avatar-size: 52px;
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    line-height: var(--avatar-size);
+    font-size: calc(var(--avatar-size) * 0.6);
+}
+
+.hydrogen .avatar.size-30 {
+    --avatar-size: 30px;
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    line-height: var(--avatar-size);
+    font-size: calc(var(--avatar-size) * 0.6);
+}
+
+.hydrogen .avatar.size-24 {
+    --avatar-size: 24px;
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    line-height: var(--avatar-size);
+    font-size: calc(var(--avatar-size) * 0.6);
+}
+
+.hydrogen .avatar.size-12 {
+    --avatar-size: 12px;
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    line-height: var(--avatar-size);
+    font-size: calc(var(--avatar-size) * 0.6);
+}

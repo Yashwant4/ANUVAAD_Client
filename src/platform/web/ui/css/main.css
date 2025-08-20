@@ -1,0 +1,45 @@
+/*
+Copyright 2025 New Vector Ltd.
+Copyright 2020 Bruno Windels <bruno@windels.cloud>
+Copyright 2020 The Matrix.org Foundation C.I.C.
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+@import url('font.css');
+@import url('layout.css');
+@import url('popup.css');
+@import url('login.css');
+@import url('left-panel.css');
+@import url('right-panel.css');
+@import url('room.css');
+@import url('timeline.css');
+@import url('avatar.css');
+@import url('spinner.css');
+@import url('form.css');
+@import url('status.css');
+
+/* only if the body contains the whole app (e.g. we're not embedded in a page), make some changes */
+body.hydrogen {
+    /* make sure to disable rubber-banding and pull to refresh in a PWA if we'd end up having a scrollbar */
+    overscroll-behavior: none;
+    /* disable rubberband scrolling on document in IE11 */
+    overflow: hidden;
+}
+
+.hydrogen {
+    margin: 0;
+}
+
+.hiddenWithLayout {
+    visibility: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* hide clear buttons in IE */
+input::-ms-clear {
+    display: none;
+}

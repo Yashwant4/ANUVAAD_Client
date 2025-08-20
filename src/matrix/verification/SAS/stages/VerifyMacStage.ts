@@ -1,0 +1,80 @@
+/*
+Copyright 2025 New Vector Ltd.
+Copyright 2023 The Matrix.org Foundation C.I.C.
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+import {BaseSASVerificationStage} from "./BaseSASVerificationStage";
+import {ILogItem} from "../../../../logging/types";
+import {CancelReason, VerificationEventType} from "../channel/types";
+import {createCalculateMAC} from "../mac";
+import {SendDoneStage} from "./SendDoneStage";
+import {KeyUsage, getKeyEd25519Key} from "../../CrossSigning";
+import {getDeviceEd25519Key} from "../../../e2ee/common";
+
+export type KeyVerifier = (keyId: string, publicKey: string, keyInfo: string) => boolean;
+
+export class VerifyMacStage extends BaseSASVerificationStage {
+    async completeStage() {
+        await this.log.wrap("VerifyMacStage.completeStage", async (log) => {
+            const acceptMessage = this.channel.acceptMessage.content;
+            const macMethod = acceptMessage.message_authentication_code;
+            const calculateMAC = createCalculateMAC(this.olmSAS, macMethod);
+            await this.checkMAC(calculateMAC, log);
+            this.setNextStage(new SendDoneStage(this.options));
+        });
+    }
+
+    private async checkMAC(calculateMAC: (input: string, info: string, log: ILogItem) => string, log: ILogItem): Promise<void> {
+        const {content} = this.channel.getReceivedMessage(VerificationEventType.Mac);
+        const baseInfo =
+            "MATRIX_KEY_VERIFICATION_MAC" +
+            this.otherUserId +
+            this.otherUserDeviceId +
+            this.ourUserId +
+            this.ourUserDeviceId +
+            this.channel.id;
+
+        const calculatedMAC = calculateMAC(Object.keys(content.mac).sort().join(","), baseInfo + "KEY_IDS", log);
+        if (content.keys !== calculatedMAC) {
+            log.log({ l: "MAC verification failed for keys field", keys: content.keys, calculated: calculatedMAC });
+            this.channel.cancelVerification(CancelReason.KeyMismatch);
+            return;
+        }
+
+        await this.verifyKeys(content.mac, (keyId, key, keyInfo) => {
+            const calculatedMAC = calculateMAC(key, baseInfo + keyId, log);
+            const matches = keyInfo === calculatedMAC;
+            if (!matches) {
+                log.log({ l: "Mac verification failed for key", keyMac: keyInfo, calculatedMAC, keyId, key });
+                this.channel.cancelVerification(CancelReason.KeyMismatch);
+            }
+            return matches;
+        }, log);
+    }
+
+    protected async verifyKeys(keys: Record<string, string>, verifier: KeyVerifier, log: ILogItem): Promise<void> {
+        const userId = this.otherUserId;
+        for (const [keyId, keyInfo] of Object.entries(keys)) {
+            const deviceIdOrMSK = keyId.split(":", 2)[1];
+            const device = await this.deviceTracker.deviceForId(userId, deviceIdOrMSK, this.hsApi, log);
+            if (device) {
+                if (!verifier(keyId, getDeviceEd25519Key(device), keyInfo)) {
+                    throw new Error(`MAC verification failed for key ${keyInfo}`);
+                }
+            } else {
+                // If we were not able to find the device, then deviceIdOrMSK is actually the MSK!
+                const key = await this.deviceTracker.getCrossSigningKeyForUser(userId, KeyUsage.Master, this.hsApi, log);
+                if (!key) {
+                    log.log({ l: "Fetching msk failed", userId });
+                    throw new Error("Fetching MSK for user failed!");
+                }
+                const masterKey = getKeyEd25519Key(key);
+                if(!(masterKey && verifier(keyId, masterKey, keyInfo))) {
+                    throw new Error(`MAC verification failed for key ${keyInfo}`);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,70 @@
+/*
+Copyright 2025 New Vector Ltd.
+Copyright 2020 Bruno Windels <bruno@windels.cloud>
+Copyright 2020 The Matrix.org Foundation C.I.C.
+
+SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial
+Please see LICENSE files in the repository root for full details.
+*/
+
+.middle-header {
+    align-items: center;
+}
+
+.middle-header h2 {
+    flex: 1;
+}
+
+.middle-header .room-description {
+    flex: 1;
+    min-width: 0;
+}
+
+.RoomHeader .topic {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.RoomHeader .description {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.middle-header h2 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+.MessageComposer_replyPreview {
+    display: grid;
+    grid-template-columns: 1fr auto;
+}
+
+.MessageComposer_replyPreview .Timeline_message {
+    grid-column: 1/-1;
+}
+
+.MessageComposer_input {
+    display: flex;
+    align-items: center;
+}
+
+.MessageComposer_input > input {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.TimelineLoadingView {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.TimelineLoadingView > :not(:first-child) {
+    margin-left: 12px;
+}
