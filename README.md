@@ -23,12 +23,11 @@ Yarn or npm
 Anuvaad Backend running at http://localhost:5000
 
 2. Installation
-
-## Clone the repository
+   Clone the repository
 git clone [https://github.com/yourusername/saralvarta-client.git](https://github.com/yourusername/saralvarta-client.git)
 cd saralvarta-client
 
-## Install dependencies
+ Install dependencies
 yarn install
 
 
