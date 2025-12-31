@@ -212,7 +212,8 @@ export class RoomViewModel extends ErrorReportViewModel {
             }
         }
     }
-    
+
+
     _sendMessage(message, replyingTo) {
         return this.logAndCatch("RoomViewModel.sendMessage", async log => {
             let success = false;
@@ -232,6 +233,15 @@ export class RoomViewModel extends ErrorReportViewModel {
                 } else {
                     content = {msgtype, body: message};
                 }
+
+                // --- This is the only modified part ---
+                if (content) {
+                    // Read the saved language, or default to "en" if none is saved
+                    const userLanguage = localStorage.getItem("userLanguage") || "en";
+                    content["dev.yourdomain.language"] = userLanguage;
+                }
+                // ------------------------------------
+
                 await this._room.sendEvent("m.room.message", content, undefined, log);
                 success = true;
             }
@@ -239,7 +249,39 @@ export class RoomViewModel extends ErrorReportViewModel {
             return success;
         }, false);
     }
+ /*   _sendMessage(message, replyingTo) {
+        console.log("--- Send message function was called! ---");
+        return this.logAndCatch("RoomViewModel.sendMessage", async log => {
+            let success = false;
+            if (!this._room.isArchived && message) {
+                let msgtype = "m.text";
+                if (message.startsWith("//")) {
+                    message = message.substring(1).trim();
+                } else if (message.startsWith("/")) {
+                    const result = await this._processCommand(message);
+                    msgtype = result.msgtype;
+                    message = result.message;
+                }
+                let content;
+                if (replyingTo) {
+                    log.set("replyingTo", replyingTo.eventId);
+                    content = await replyingTo.createReplyContent(msgtype, message);
+                } else {
+                    content = {msgtype, body: message};
+                }
+                if (content) {
+                content["dev.yourdomain.language"] = "en";
+                }            
+                console.log("Final content object being sent:", content);
 
+                await this._room.sendEvent("m.room.message", content, undefined, log);
+                success = true;
+            }
+            log.set("success", success);
+            return success;
+        }, false);
+    }
+*/
     async _processCommandJoin(roomName) {
         try {
             const session = this._options.client.session;

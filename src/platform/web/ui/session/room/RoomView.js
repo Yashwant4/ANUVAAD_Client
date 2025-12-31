@@ -24,8 +24,20 @@ export class RoomView extends TemplateView {
         this._viewClassForTile = viewClassForTile;
         this._optionsPopup = null;
     }
+// In src/platform/web/ui/session/room/RoomView.js
 
     render(t, vm) {
+        // This is the language data for our dropdown
+        const languages = {
+            "en": "English",
+            "hi": "हिंदी (Hindi)",
+            "mr": "मराठी (Marathi)",
+            "as": "অসমীয়া (Assamese)",
+            "":"Auto-detect"
+        };
+        // Get the previously saved language, or default to "en"
+        const savedLang = localStorage.getItem("userLanguage") || "en";
+
         return t.main({className: "RoomView middle"}, [
             t.div({className: "RoomHeader middle-header"}, [
                 t.a({className: "button-utility close-middle", href: vm.closeUrl, title: vm.i18n`Close room`}),
@@ -33,6 +45,26 @@ export class RoomView extends TemplateView {
                 t.div({className: "room-description"}, [
                     t.h2(vm => vm.name),
                 ]),
+
+                
+                t.div({ className: "language-selector-wrapper" }, [
+                    t.label({ for: "language-select" }, "My Language:"),
+                    t.select({
+                        id: "language-select",
+                        // This function runs every time the user picks a new language
+                        onchange: event => {
+                            localStorage.setItem("userLanguage", event.target.value);
+                        }
+                    }, Object.entries(languages).map(([code, name]) => {
+                        // Create an <option> for each language
+                        return t.option({
+                            value: code,
+                            // This makes sure the saved language is selected on load
+                            selected: code === savedLang
+                        }, name);
+                    }))
+                ]),
+
                 t.button({
                     className: "button-utility room-options",
                     "aria-label":vm.i18n`Room options`,

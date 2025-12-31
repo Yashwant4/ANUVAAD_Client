@@ -1,13 +1,19 @@
-*.sublime-project
-*.sublime-workspace
+
+# Dependencies
+node_modules/
+dist/
+target/
+build/
+
+# OS files
 .DS_Store
-node_modules
-fetchlogs
-sessionexports
-bundle.js
-target
-lib
-*.tar.gz
-.eslintcache
-.tmp
-playwright/synapselogs
+Thumbs.db
+
+# Environment/Secret files
+.env
+.env.local
+
+# Logs
+*.log
+yarn-error.log*
+EOF

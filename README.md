@@ -1,62 +1,78 @@
-# Hydrogen
+# Anuvaad Matrix Client (Modified Hydrogen)
 
-A minimal [Matrix](https://matrix.org/) chat client, focused on performance, offline functionality, and broad browser support. This is work in progress and not yet ready for primetime. Bug reports are welcome, but please don't file any feature requests or other missing things to be on par with Element Web.
+This is a modified version of the Hydrogen Matrix web client, enhanced with an integrated, on-demand translation system for Indian languages.
 
-## Goals
+## 🌟 Custom Features
 
-Hydrogen's goals are:
- - Work well on desktop as well as mobile browsers
- - UI components can be easily used in isolation
- - It is a standalone webapp, but can also be easily embedded into an existing website/webapp to add chat capabilities.
- - Loading (unused) parts of the application after initial page load should be supported
+In-Chat Translation: A "Translate" button appears for messages not in your native language.
 
-For embedded usage, see the [SDK instructions](doc/SDK.md).
+Language Metadata: Automatically tags outgoing messages with the sender's language preference.
 
-If you find this interesting, come and discuss on [`#hydrogen:matrix.org`](https://matrix.to/#/#hydrogen:matrix.org).
+Automatic Detection: Seamlessly integrates with the SaralVarta Backend to detect languages for untagged messages.
 
-# How to use
+Custom UI: A native-looking language selector in the room header.
 
-Hydrogen is deployed to [hydrogen.element.io](https://hydrogen.element.io). You can also deploy Hydrogen on your own web server:
+🛠️ Setup Instructions
 
- 1. Download the [latest release package](https://github.com/vector-im/hydrogen-web/releases).
- 1. Extract the package to the public directory of your web server.
- 1. If this is your first deploy:
-    1. copy `config.sample.json` to `config.json` and if needed, make any modifications (unless you've set up your own [sygnal](https://github.com/matrix-org/sygnal) instance, you don't need to change anything in the `push` section).
-    1. Disable caching entirely on the server for:
-        - `index.html`
-        - `sw.js`
-        - `config.json`
-        - All theme manifests referenced in the `themeManifests` of `config.json`, these files are typically called `theme-{name}.json`.
+1. Prerequisites
 
-        These resources will still be cached client-side by the service worker. Because of this; you'll still need to refresh the app twice before config.json changes are applied.
+Node.js (Latest LTS recommended)
 
-## Set up a dev environment
+Yarn or npm
 
-You can run Hydrogen locally by the following commands in the terminal:
+Anuvaad Backend running at http://localhost:5000
 
- - `yarn install` (only the first time)
- - `yarn start` in the terminal
+2. Installation
 
-Now point your browser to `http://localhost:3000`. If you prefer, you can also [use docker](doc/docker.md).
+## Clone the repository
+git clone [https://github.com/yourusername/saralvarta-client.git](https://github.com/yourusername/saralvarta-client.git)
+cd saralvarta-client
 
-PS: You need nodejs, running yarn on top of any other js platform is not supported.
-
-# FAQ
-
-Some frequently asked questions are answered [here](FAQ.md).
+## Install dependencies
+yarn install
 
 
-## Copyright & License
+3. Configuration
 
-Copyright (c) 2015-2016 OpenMarket Ltd 
+Ensure your API Key in src/platform/web/ui/session/room/timeline/TextMessageView.js matches the one set in your backend:
 
-Copyright (c) 2019-2023 The Matrix.org Foundation C.I.C.
+const response = await fetch("[http://127.0.0.1:5000/translate](http://127.0.0.1:5000/translate)", {
+    headers: { "X-API-KEY": "your-super-secret-key-123" },
+    // ...
+});
 
-Copyright (c) 2025 New Vector Ltd
 
-This software is multi licensed by New Vector Ltd (Element). It can be used either:
+4. Development
 
-(1) for free under the terms of the GNU Affero General Public License (as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version); OR
+yarn start
 
-(2) under the terms of a paid-for Element Commercial License agreement between you and Element (the terms of which may vary depending on what you and Element have agreed to).
-Unless required by applicable law or agreed to in writing, software distributed under the Licenses is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the Licenses for the specific language governing permissions and limitations under the Licenses.
+
+The app will be available at http://localhost:3000.
+
+##📂 Key Modifications
+
+TextMessageView.js: Implements the fetch logic for detection and translation.
+
+RoomView.js: Adds the "My Language" dropdown UI.
+
+RoomViewModel.js: Handles the injection of language metadata into Matrix events.
+
+##👥 Contributors
+
+Yashwant Kumar Upadhyay
+
+Vikrant Kumar
+
+Medhabrata Konwar
+
+Debashis Bhuyan
+
+Bhargab Jyoti Bhuyan
+
+Yajant Kumar
+
+Guides: Anil Kumar Gupta (CDAC), Dr. Nabajyoti Medhi (Tezpur University)
+
+##📄 License
+
+The original Hydrogen client is licensed under Apache 2.0.

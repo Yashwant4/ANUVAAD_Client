@@ -43,3 +43,65 @@ body.hydrogen {
 input::-ms-clear {
     display: none;
 }
+/* At the bottom of src/platform/web/ui/css/main.css */
+
+/* --- Styling for the Translate Button --- */
+.translate-button {
+  background: none;
+  border: none;
+  padding: 4px 0 2px 0; /* Top, Right, Bottom, Left padding */
+  margin: 0;
+  color: var(--icon-color); /* Use a color from the app's theme */
+  font-size: 12px;
+  font-weight: 600; /* Bolder text */
+  cursor: pointer;
+  align-self: flex-start; /* Align it to the left */
+  opacity: 0.75; /* Make it slightly transparent */
+  transition: opacity 0.2s; /* Smooth hover effect */
+}
+
+.translate-button:hover {
+  opacity: 1; /* Fully opaque on hover */
+  text-decoration: underline;
+}
+
+.translated-text {
+  font-size: 13px;
+  opacity: 0.8;
+  font-style: italic;
+  padding-top: 4px;
+  white-space: pre-wrap;
+  border-left: 2px solid var(--bg-surface-color-2); /* Add a subtle quote line */
+  padding-left: 8px; /* Space from the quote line */
+  margin-top: 4px;
+}
+
+/* --- Styling for our Language Selector --- */
+.language-selector-wrapper {
+  margin-left: auto;
+  margin-right: 12px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-color);
+}
+
+#language-select {
+  /* Remove default browser styling */
+  appearance: none;
+  -webkit-appearance: none;
+  
+  /* Our custom styling */
+  background-color: var(--bg-surface-color-2); /* Match app background */
+  color: var(--text-color);
+  border: 1px solid var(--bg-surface-color-3); /* Subtle border */
+  padding: 4px 8px;
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer;
+  font-size: 13px;
+}
+
+#language-select:hover {
+    border-color: var(--icon-color); /* Highlight on hover */
+}
